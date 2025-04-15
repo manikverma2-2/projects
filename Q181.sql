@@ -1,31 +1,49 @@
--- 180. Consecutive Numbers
+--181. Employees Earning More Than Their Managers
 
---Question
---Write a SQL query to find all numbers that appear at least three times consecutively.
+```Table: Employee
 
-```
-+----+-----+
-| Id | Num |
-+----+-----+
-| 1  |  1  |
-| 2  |  1  |
-| 3  |  1  |
-| 4  |  2  |
-| 5  |  1  |
-| 6  |  2  |
-| 7  |  2  |
-+----+-----+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| name        | varchar |
+| salary      | int     |
+| managerId   | int     |
++-------------+---------+
+id is the primary key (column with unique values) for this table.
+Each row of this table indicates the ID of an employee, their name, salary, and the ID of their manager.
+ 
 
-For example, given the above Logs table, 1 is the only number that appears consecutively for at least three times.
+Write a solution to find the employees who earn more than their managers.
 
-+-----------------+
-| ConsecutiveNums |
-+-----------------+
-| 1               |
-+-----------------+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Employee table:
++----+-------+--------+-----------+
+| id | name  | salary | managerId |
++----+-------+--------+-----------+
+| 1  | Joe   | 70000  | 3         |
+| 2  | Henry | 80000  | 4         |
+| 3  | Sam   | 60000  | Null      |
+| 4  | Max   | 90000  | Null      |
++----+-------+--------+-----------+
+Output: 
++----------+
+| Employee |
++----------+
+| Joe      |
++----------+
+Explanation: Joe is the only employee who earns more than his manager.
 ```
 
 --Write your MySQL query statement below
-Select distinct l1.num as ConsecutiveNums from Logs l1, Logs l2, Logs l3 where
-l2.id=l1.id-1 and l3.id=l1.id-2 and l1.num=l2.num and l1.num= l3.num;
-
+select e1.name as Employee from Employee e1
+left Join Employee e2 on e1.managerId=e2.id 
+where e1.salary> e2. salary;
