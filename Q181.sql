@@ -1,6 +1,6 @@
 ## 180. Consecutive Numbers
 
-## Question
+### Question
 Write a SQL query to find all numbers that appear at least three times consecutively.
 
 ```
@@ -25,7 +25,27 @@ For example, given the above Logs table, 1 is the only number that appears conse
 +-----------------+
 ```
 
+### 二刷
+1. 实际上一张表完全可以和自身进行匹配。
+2. 我们可以使用该表和自身进行匹配。
+```SQL
 # Write your MySQL query statement below
-Select distinct l1.num as ConsecutiveNums from Logs l1, Logs l2, Logs l3 where
-l2.id=l1.id-1 and l3.id=l1.id-2 and l1.num=l2.num and l1.num= l3.num;
+SELECT DISTINCT l1.Num as ConsecutiveNums
+FROM Logs l1, Logs l2, Logs l3
+WHERE l2.Id = l1.Id - 1 and l3.Id = l1.Id - 2 and l1.Num = l2.Num and l3.Num = l1.Num;
+```
 
+1. 使用变量
+2. 记得FROM以后一定是接着一张表， 所以即使是我们查找出来的表结构，我们也要使用AS字段将查找结果变成一张新的表结构。
+```SQL
+# Write your MySQL query statement below
+SELECT DISTINCT Num AS ConsecutiveNums
+FROM (
+    SELECT Num, @count := IF(Num = @pre, @count + 1, 1) AS cc, @pre := Num
+    FROM Logs, (SELECT @count := 0, @pre := -1) AS init
+) AS t
+WHERE t.cc > 2;
+```
+
+### 引用
+1. [leetcode 180. Consecutive Numbers](https://blog.csdn.net/yuxin6866/article/details/52151962)
