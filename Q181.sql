@@ -1,6 +1,6 @@
 ## 180. Consecutive Numbers
 
-### Question
+## Question
 Write a SQL query to find all numbers that appear at least three times consecutively.
 
 ```
@@ -24,8 +24,6 @@ For example, given the above Logs table, 1 is the only number that appears conse
 | 1               |
 +-----------------+
 ```
-
-```SQL
 
 # Write your MySQL query statement below
 Select distinct l1.num as ConsecutiveNums from Logs l1, Logs l2, Logs l3 where
