@@ -1,5 +1,5 @@
 streamlit==1.22.0
-tensorflow==2.11.0
+tensorflow==2.6.0
 numpy>=1.21,<1.24
 protobuf>=3.19.0,<4.0.0
 scikit-learn
