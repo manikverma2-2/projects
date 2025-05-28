@@ -1,5 +1,5 @@
-streamlit
-numpy
+streamlit==1.32.0
 tensorflow==2.11.0
-scikit-learn
-nltk
+numpy==1.23.5
+scikit-learn==1.2.2
+nltk==3.8.1
