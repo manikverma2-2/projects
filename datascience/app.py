@@ -1,54 +1,39 @@
 import streamlit as st
-import pandas as pd
-import torch
-from transformers import BertTokenizer, BertForSequenceClassification
+import pickle
+import numpy as np
+import re
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-# Load fine-tuned model
-MODEL_PATH = "model"
-tokenizer = BertTokenizer.from_pretrained(MODEL_PATH)
-model = BertForSequenceClassification.from_pretrained(MODEL_PATH)
-model.eval()
+# Load model and tokenizer
+model = load_model("sentiment_model.h5")
+with open("tokenizer.pickle", "rb") as handle:
+    tokenizer = pickle.load(handle)
 
-label_map = {0: "Negative 😠", 1: "Neutral 😐", 2: "Positive 😊"}
+MAX_LEN = 200
+sentiment_labels = {-1: "Negative", 0: "Neutral", 1: "Positive"}
 
-def predict_sentiment(text):
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=512)
-    with torch.no_grad():
-        outputs = model(**inputs)
-    probs = torch.nn.functional.softmax(outputs.logits, dim=-1)[0]
-    label = torch.argmax(probs).item()
-    return label_map[label], probs.tolist()
+def clean_text(text):
+    text = re.sub(r'<.*?>', '', text)  # remove HTML
+    text = re.sub(r'[^a-zA-Z ]', '', text)  # remove non-letters
+    return text.lower()
 
-# Streamlit App UI
-st.set_page_config(page_title="Sentiment Classifier", layout="wide")
-st.title("🎬 IMDB Sentiment Classifier (BERT)")
-st.markdown("Upload a file or type your movie review to classify it as Positive, Neutral, or Negative.")
+def classify_sentiment(pred_probs):
+    pred_class = np.argmax(pred_probs)
+    return sentiment_labels[pred_class - 1]  # Because we mapped -1 → 0, 0 → 1, 1 → 2
 
-option = st.radio("Choose input method:", ["Type review", "Upload file"])
+st.title("🎬 IMDB Sentiment Analysis")
+st.write("Enter a movie review and get the predicted sentiment!")
 
-if option == "Type review":
-    text_input = st.text_area("✍️ Enter your review:", height=150)
-    if st.button("Predict Sentiment"):
-        if text_input.strip() == "":
-            st.warning("Please enter a review.")
-        else:
-            label, probs = predict_sentiment(text_input)
-            st.success(f"Predicted Sentiment: **{label}**")
-            st.bar_chart(probs)
+user_input = st.text_area("Your Review", "")
 
-elif option == "Upload file":
-    uploaded_file = st.file_uploader("📤 Upload a .txt or .csv file with reviews", type=["txt", "csv"])
-    if uploaded_file is not None:
-        if uploaded_file.name.endswith(".csv"):
-            df = pd.read_csv(uploaded_file)
-            if "review" not in df.columns:
-                st.error("CSV must contain a 'review' column.")
-            else:
-                df["Sentiment"], df["Confidence"] = zip(*df["review"].apply(predict_sentiment))
-                st.dataframe(df[["review", "Sentiment"]])
-        elif uploaded_file.name.endswith(".txt"):
-            lines = uploaded_file.read().decode("utf-8").splitlines()
-            results = [{"Review": line, "Sentiment": predict_sentiment(line)[0]} for line in lines if line.strip()]
-            result_df = pd.DataFrame(results)
-            st.dataframe(result_df)
-
+if st.button("Analyze Sentiment"):
+    if user_input:
+        cleaned = clean_text(user_input)
+        seq = tokenizer.texts_to_sequences([cleaned])
+        padded = pad_sequences(seq, maxlen=MAX_LEN)
+        pred_probs = model.predict(padded)
+        result = classify_sentiment(pred_probs)
+        st.success(f"Predicted Sentiment: **{result}**")
+    else:
+        st.warning("Please enter a review first.")

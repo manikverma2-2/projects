@@ -1,4 +1,8 @@
 streamlit
-transformers
-torch
+tensorflow
+numpy
 pandas
+nltk
+scikit-learn
+matplotlib
+seaborn
