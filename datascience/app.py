@@ -11,7 +11,7 @@ MAX_LEN = 200
 # Load model and preprocessing tools
 @st.cache_resource
 def load_all():
-    model = load_model("sentiment_model.h5")
+    model = load_model("datascience/sentiment_model.h5")
     with open("tokenizer.pkl", "rb") as f:
         tokenizer = pickle.load(f)
     with open("label_encoder.pkl", "rb") as f:
