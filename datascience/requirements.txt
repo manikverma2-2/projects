@@ -1,5 +1,5 @@
 streamlit
 numpy
-tensorflow
+tensorflow==2.11.0
 scikit-learn
 nltk
