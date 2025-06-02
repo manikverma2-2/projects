@@ -41,7 +41,8 @@ This project presents a comprehensive **Retail Analysis Dashboard** built using 
 
 ## 📷 Sample Screenshots
 
-> *(Add screenshots of key pages of your dashboard here)*
+![image](https://github.com/user-attachments/assets/9bdfecaf-57bd-439c-affc-53ee6e39f639)
+
 
 ## 💡 Insights Gained
 
